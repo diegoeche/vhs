@@ -1,0 +1,2 @@
+#!/bin/sh
+erl -pa apps/wapn_provider/ebin deps/*/ebin

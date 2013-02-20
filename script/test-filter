@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+# Original Author: Johannes Huning <johannes.huning@wooga.net>
+
+# List of test successes/failures.
+@tests_passed = false
+
+# Read the entire input at once.
+str = ""
+while line = $stdin.gets
+    str += line
+end
+
+
+# Remove SASL logging.
+str.gsub!(/\=INFO(:?.+\n){3,3}.+type\:.+\n?$/, "")
+
+# Failed etest tests.
+str.gsub!(/\*failed\*/, "\x1b[31m*failed*\x1b[0m")
+
+# Compilation warnings.
+str.gsub!(/Warning/, "\x1b[1;31mWarning\x1b[0;0m")
+
+# Custom reports.
+str.gsub!(/(\=.+\sREPORT\={1,}\s.+\s\={1,})/i) do |md|
+    "\x1b[1;15m#{md}\x1b[0m"
+end
+
+# etest failure reasons in yellow.
+str.gsub!(/^(::.+(?:\n +.+)*)/, "\x1b[1;30m\\1\x1b[0m")
+
+# Highlight etest summary.
+str.match(/Failed:\s(\d+)\.\s+Success:\s(\d+)\.\s+Total:\s(\d+)\./) do |md|
+    replacement = if md[1].to_i > 0
+        "\x1b[31m%s\x1b[0m"
+    elsif md[2].to_i < md[3].to_i
+        "\x1b[33m%s\x1b[0m"
+    else
+        @tests_passed = true
+        "\x1b[32m%s\x1b[0m"
+    end
+
+    str.gsub!(/(\={41}\n.+)/) do |md|
+        replacement % [md]
+    end
+end
+
+
+# Highlight CT test status summary.
+str.match(/(\d+)\sok,?\s(\d+)\sfailed.+(\d+)/) do |md|
+    replacement = if md[2].to_i > 0
+        "\x1b[31m%s\x1b[0m"
+    elsif md[3].to_i > (md[2].to_i + md[1].to_i)
+        "\x1b[33m%s\x1b[0m"
+    else
+        @tests_passed = true
+        "\x1b[32m%s\x1b[0m"
+    end
+
+    str.gsub!(/Testing\s.+test\scases\n$/) do |md|
+        replacement % [md]
+    end
+end
+
+# Compact and print test output.
+str.gsub!(/^\n{2,}/, "\n\n")
+str.gsub!(/\n{2,}/, "\n\n")
+str.gsub!(/\n*\z/, "\n")
+
+$stdout.print(str)
+
+# Exit with status 0 if all tests passed, with 1 otherwise.
+Kernel.exit( @tests_passed ? 0 : 1 )

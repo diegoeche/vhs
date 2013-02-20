@@ -1,0 +1,21 @@
+#!/bin/sh
+# Original Author: Johannes Huning <johannes.huning@wooga.net>
+
+PROJECT_ROOT=`pwd`
+export APP_ROOT=$PROJECT_ROOT
+
+# Set environment to `test` unless already set.
+if [ "$ERL_ENV" = "" ]
+then
+    export ERL_ENV="test"
+fi
+
+# Set project root to `pwd` unless already set.
+if [ "$ERL_ROOT" = "" ]
+then
+    export ERL_ROOT=`pwd`
+fi
+
+# Compile the current state, on success run tests.
+script/rebar clean compile skip_deps=true && \
+    script/test-runner | script/test-filter
