@@ -1,5 +1,8 @@
 -module(vhs_ibrowse).
--export([configure/1, configure/0, block_start/0]).
+-export([configure/1,
+         configure/0,
+         block_end/0,
+         block_start/1]).
 
 configure(_Opts) ->
   %% io:format("Starting!~n", []),
@@ -11,8 +14,7 @@ configure(_Opts) ->
 configure() ->
   configure([]).
 
-block_start() ->
-  AllCalls = [],
+block_start(AllCalls) ->
   %% Unsure whether this code is really specific for ibrowse or could be lifted
   %% into the main vhs module
   MockBehavior = fun(Args) ->
@@ -26,6 +28,9 @@ block_start() ->
                      end
                  end,
   mock_3_to_6_arg_function_(ibrowse, send_req, MockBehavior).
+
+block_end() ->
+  meck:unload(ibrowse).
 
 %% HACK
 mock_3_to_6_arg_function_(Module, FuncName, MockBehavior) ->

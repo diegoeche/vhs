@@ -34,26 +34,34 @@ handle_call({configure_, ModuleName}, _From, S) ->
   {reply, ok, S};
 
 handle_call({block_start, TapeName}, _From, {Impl, S}) ->
-  Impl:block_start(),
-  {reply, ok, {Impl,[]}}; %% Forget previous state.
+  case file:consult(filename_(TapeName)) of
+    {ok, [Calls]} ->
+      Impl:block_start(Calls),
+      {reply, ok, {Impl,Calls}};
+    _ ->
+      Impl:block_start([]),
+      {reply, ok, {Impl, []}}
+  end;
 
-handle_call({block_end, TapeName}, _From, S) ->
-  {reply, ok, S};
+handle_call({block_end, TapeName}, _From, {Impl, Calls}=S) ->
+  %% Make it configurable!
+  file:write_file(filename_(TapeName), io_lib:fwrite("~p.\n", [Calls])),
+  Impl:block_end(),
+  {reply, ok, {Impl, []}}; %% Clean Server State
 
 handle_call({record, Call}, _From, {Impl, S}) ->
   NewState = {Impl, [Call | S]},
   {reply, ok, NewState};
 
-handle_call({server_state}, _From, {_, S}) ->
-  {reply, S, S}.
+handle_call({server_state}, _From, S={_, Calls}) ->
+  {reply, Calls, S}.
 
 is_loc_key_blacklisted(Key) ->
   gen_server:call(?SERVER, {is_loc_key_blacklisted, Key}).
 
-configure(ibrowse, Options) ->
+configure(ibrowse, _Options) ->
   start_link(vhs_ibrowse),
   vhs_ibrowse:configure(),
-  %...
   ok;
 configure(_, _) ->
   throw(adapter_not_supported).
@@ -80,3 +88,6 @@ block_end_(TapeName) ->
 
 handle_mocked_request() ->
   ok.
+
+filename_(TapeName) ->
+  FileName = "/tmp/" ++ atom_to_list(TapeName).
