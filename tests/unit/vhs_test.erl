@@ -14,7 +14,7 @@ test_configure_with_ibrowse_adapter() ->
                    vhs:configure(ibrowse, [])).
 
 %% vhs:use_cassete should save all the request-responses into the tape file
-test_use_cassette_with_ibrowse_adapter() ->
+test_recording_a_call_with_ibrowse_adapter() ->
   ibrowse:start(),
 
   vhs:configure(ibrowse, []),
@@ -33,5 +33,21 @@ test_use_cassette_with_ibrowse_adapter() ->
 
   %% The number of stored calls should correspond to the calls done inside of the block.
   ?assert_equal(1, length(StoredCalls)),
+  ok.
+
+%% vhs:use_cassete should save all the request-responses into the tape file
+test_invariants_when_no_call_is_performed() ->
+  ibrowse:start(),
+  vhs:configure(ibrowse, []),
+  vhs:use_cassette(another_call,
+                   fun() ->
+                       ?assert_equal([], vhs:server_state())
+                   end),
+
+  %% Cleans the state of the server after the block is executed
+  ?assert_equal([], vhs:server_state()),
+
+  %% It should have the nice side-effect of creating a new file
+  {ok, [[]]} = file:consult("/tmp/another_call"),
   ok.
 
