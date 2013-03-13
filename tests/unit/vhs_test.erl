@@ -16,13 +16,20 @@ test_configure_with_ibrowse_adapter() ->
 %% vhs:use_cassete should save all the request-responses into the tape file
 test_recording_a_call_with_ibrowse_adapter() ->
   ibrowse:start(),
-
   vhs:configure(ibrowse, []),
   vhs:use_cassette(iana_domain_test,
                    fun() ->
                        ibrowse:send_req("http://www.iana.org/domains/example/", [], get),
-                       Calls = [{Request, Response}] = vhs:server_state(),
-                       ?assert_equal(Request, ["http://www.iana.org/domains/example/", [], get])
+                       [{Request, Response}] = vhs:server_state(),
+                       ?assert_equal(Request, ["http://www.iana.org/domains/example/", [], get]),
+                       ?assert_equal(Response, {ok,"302",
+                                                [{"Date","Wed, 13 Mar 2013 09:48:03 GMT"},
+                                                 {"Server","Apache/2.2.3 (CentOS)"},
+                                                 {"Location","http://www.iana.org/domains/example"},
+                                                 {"Content-Length","0"},
+                                                 {"Connection","close"},
+                                                 {"Content-Type","text/html; charset=utf-8"}],
+                                                []})
                    end),
 
   %% Cleans the state of the server after the block is executed
@@ -50,4 +57,3 @@ test_invariants_when_no_call_is_performed() ->
   %% It should have the nice side-effect of creating a new file
   {ok, [[]]} = file:consult("/tmp/another_call"),
   ok.
-

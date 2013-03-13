@@ -8,7 +8,7 @@ configure(_Opts) ->
   %% io:format("Starting!~n", []),
   try meck:new(ibrowse, [passthrough])
   catch
-    error:Y -> ok
+    error:_ -> ok
   end.
 
 configure() ->

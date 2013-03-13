@@ -29,11 +29,7 @@ handle_info(_, S) -> { noreply, S }.
 terminate(_Reason, _S) -> ok.
 code_change(_OldVsn, S, _Extra) -> { ok, S }.
 
-%% handle_call %%
-handle_call({configure_, ModuleName}, _From, S) ->
-  {reply, ok, S};
-
-handle_call({block_start, TapeName}, _From, {Impl, S}) ->
+handle_call({block_start, TapeName}, _From, {Impl, _S}) ->
   case file:consult(filename_(TapeName)) of
     {ok, [Calls]} ->
       Impl:block_start(Calls),
@@ -43,7 +39,7 @@ handle_call({block_start, TapeName}, _From, {Impl, S}) ->
       {reply, ok, {Impl, []}}
   end;
 
-handle_call({block_end, TapeName}, _From, {Impl, Calls}=S) ->
+handle_call({block_end, TapeName}, _From, {Impl, Calls}) ->
   %% Make it configurable!
   file:write_file(filename_(TapeName), io_lib:fwrite("~p.\n", [Calls])),
   Impl:block_end(),
@@ -55,9 +51,6 @@ handle_call({record, Call}, _From, {Impl, S}) ->
 
 handle_call({server_state}, _From, S={_, Calls}) ->
   {reply, Calls, S}.
-
-is_loc_key_blacklisted(Key) ->
-  gen_server:call(?SERVER, {is_loc_key_blacklisted, Key}).
 
 configure(ibrowse, _Options) ->
   start_link(vhs_ibrowse),
@@ -71,9 +64,6 @@ use_cassette(TapeName, Block) ->
   Block(),
   block_end_(TapeName).   %% Unmounts mocks. Saves the server state into TapeName
 
-play_cassette(TapeName) ->
-  gen_server:call(?SERVER, {play_cassette}).
-
 server_state() ->
   gen_server:call(?SERVER, {server_state}).
 
@@ -86,8 +76,5 @@ block_start_(TapeName) ->
 block_end_(TapeName) ->
   gen_server:call(?SERVER, {block_end, TapeName}).
 
-handle_mocked_request() ->
-  ok.
-
 filename_(TapeName) ->
-  FileName = "/tmp/" ++ atom_to_list(TapeName).
+  "/tmp/" ++ atom_to_list(TapeName).
