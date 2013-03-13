@@ -8,7 +8,19 @@ libraries should be easy to add.
 # Show me the Code #
 
 ```erlang
+  ibrowse:start(),
+  vhs:configure(ibrowse, []),
+  vhs:use_cassette(doc_domain_test,
+                   fun() ->
+                       Response = ibrowse:send_req("http://www.iana.org/domains/example",
+                                                   [],
+                                                   get),
 
+                       %% Uses the same structure of the mocked library.
+                       {ok, Status, _Headers, Body} = Response,
+                       ?assert_equal(Status, "200"),
+                       ?assert(contains(Body, "Example Domain"))
+                   end),
 
 ```
 
