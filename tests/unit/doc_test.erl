@@ -1,6 +1,5 @@
 -module (doc_test).
 -include_lib ("etest/include/etest.hrl").
--include_lib ("etest_http/include/etest_http.hrl").
 -compile (export_all).
 
 contains(Text, Part) ->
