@@ -10,19 +10,32 @@ contains(Text, Part) ->
     _ -> true
   end.
 
-%% vhs:use_cassete should save all the request-responses into the tape file
 test_how_it_works() ->
   ibrowse:start(),
   vhs:configure(ibrowse, []),
   vhs:use_cassette(doc_domain_test,
                    fun() ->
-                       Response = ibrowse:send_req("http://www.iana.org/domains/example",
+                       Response = ibrowse:send_req("http://www.iana.org/domains/reserved",
                                                    [],
                                                    get),
 
                        %% Uses the same structure of the mocked library.
                        {ok, Status, _Headers, Body} = Response,
                        ?assert_equal(Status, "200"),
-                       ?assert(contains(Body, "Example Domain"))
+                       ?assert(contains(Body, "Reserved Domains"))
+                   end),
+  ok.
+
+test_an_error() ->
+  ibrowse:start(),
+  vhs:configure(ibrowse, []),
+  vhs:use_cassette(error_test,
+                   fun() ->
+                       Response = ibrowse:send_req("http://www.iana.org/domains/example",
+                                                   [],
+                                                   get),
+
+                       {ok, Status, _Headers, _Body} = Response,
+                       ?assert_equal(Status, "500")
                    end),
   ok.

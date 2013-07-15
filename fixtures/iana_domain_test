@@ -1,0 +1,13 @@
+[{["http://www.iana.org/domains/example/",[],get],
+  {ok,"302",
+      [{"Server","Apache/2.2.3 (CentOS)"},
+       {"Location","/domains/reserved"},
+       {"Content-Type","text/html; charset=iso-8859-1"},
+       {"Content-Length","201"},
+       {"Accept-Ranges","bytes"},
+       {"Date","Mon, 15 Jul 2013 15:11:10 GMT"},
+       {"X-Varnish","23394050 23393910"},
+       {"Age","20"},
+       {"Via","1.1 varnish"},
+       {"Connection","keep-alive"}],
+      "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>302 Found</title>\n</head><body>\n<h1>Found</h1>\n<p>The document has moved <a href=\"/domains/reserved\">here</a>.</p>\n</body></html>\n"}}].

@@ -23,13 +23,17 @@ test_recording_a_call_with_ibrowse_adapter() ->
                        [{Request, Response}] = vhs:server_state(),
                        ?assert_equal(Request, ["http://www.iana.org/domains/example/", [], get]),
                        ?assert_equal(Response, {ok,"302",
-                                                [{"Date","Wed, 13 Mar 2013 09:48:03 GMT"},
-                                                 {"Server","Apache/2.2.3 (CentOS)"},
-                                                 {"Location","http://www.iana.org/domains/example"},
-                                                 {"Content-Length","0"},
-                                                 {"Connection","close"},
-                                                 {"Content-Type","text/html; charset=utf-8"}],
-                                                []})
+                                                [{"Server","Apache/2.2.3 (CentOS)"},
+                                                 {"Location","/domains/reserved"},
+                                                 {"Content-Type","text/html; charset=iso-8859-1"},
+                                                 {"Content-Length","201"},
+                                                 {"Accept-Ranges","bytes"},
+                                                 {"Date","Mon, 15 Jul 2013 15:11:10 GMT"},
+                                                 {"X-Varnish","23394050 23393910"},
+                                                 {"Age","20"},
+                                                 {"Via","1.1 varnish"},
+                                                 {"Connection","keep-alive"}],
+                                                "<!DOCTYPE HTML PUBLIC \"-//IETF//DTD HTML 2.0//EN\">\n<html><head>\n<title>302 Found</title>\n</head><body>\n<h1>Found</h1>\n<p>The document has moved <a href=\"/domains/reserved\">here</a>.</p>\n</body></html>\n"})
                    end),
 
   %% Cleans the state of the server after the block is executed
