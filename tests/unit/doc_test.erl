@@ -15,13 +15,14 @@ test_how_it_works() ->
   vhs:configure(ibrowse, []),
   vhs:use_cassette(doc_domain_test,
                    fun() ->
-                       Response = ibrowse:send_req("http://www.iana.org/domains/example",
+                       Response =
+                                  ibrowse:send_req("http://localhost:8000/200.html",
                                                    [],
                                                    get),
 
                        %% Uses the same structure of the mocked library.
                        {ok, Status, _Headers, Body} = Response,
                        ?assert_equal(Status, "200"),
-                       ?assert(contains(Body, "Example Domain"))
+                       ?assert(contains(Body, "IANA-managed Reserved Domains"))
                    end),
   ok.
