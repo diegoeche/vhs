@@ -1,6 +1,5 @@
 -module (doc_test).
 -include_lib ("etest/include/etest.hrl").
--include_lib ("etest_http/include/etest_http.hrl").
 -compile (export_all).
 
 contains(Text, Part) ->
@@ -15,14 +14,15 @@ test_how_it_works() ->
   vhs:configure(ibrowse, []),
   vhs:use_cassette(doc_domain_test,
                    fun() ->
-                       Response = ibrowse:send_req("http://www.iana.org/domains/reserved",
+                       Response =
+                                  ibrowse:send_req("http://localhost:8000/200.html",
                                                    [],
                                                    get),
 
                        %% Uses the same structure of the mocked library.
                        {ok, Status, _Headers, Body} = Response,
                        ?assert_equal(Status, "200"),
-                       ?assert(contains(Body, "Reserved Domains"))
+                       ?assert(contains(Body, "IANA-managed Reserved Domains"))
                    end),
   ok.
 

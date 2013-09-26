@@ -1,0 +1,5 @@
+*.beam
+deps/*
+.DS_Store
+ebin/*
+*.log
