@@ -31,11 +31,11 @@ test_an_error() ->
   vhs:configure(ibrowse, []),
   vhs:use_cassette(error_test,
                    fun() ->
-                       Response = ibrowse:send_req("http://www.iana.org/domains/example",
+                       Response = ibrowse:send_req("http://localhost:8000",
                                                    [],
                                                    get),
 
                        {ok, Status, _Headers, _Body} = Response,
-                       ?assert_equal(Status, "500")
+                       ?assert_equal(Status, "404")
                    end),
   ok.
