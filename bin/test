@@ -1,0 +1,5 @@
+#!/bin/bash
+
+./bin/static-server &
+./rebar compile
+./deps/etest/bin/etest-runner tests/unit/*_test.erl
