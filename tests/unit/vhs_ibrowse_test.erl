@@ -8,7 +8,7 @@ test_configure_with_ibrowse_adapter() ->
                    vhs:configure(ibrowse, [])).
 
 %% vhs:use_cassete should save all the request-responses into the tape file
-xtest_recording_a_call_with_ibrowse_adapter() ->
+test_recording_a_call_with_ibrowse_adapter() ->
     ibrowse:start(),
     vhs:configure(ibrowse, []),
     AssertHeader = fun(Key, Headers) ->
@@ -21,7 +21,7 @@ xtest_recording_a_call_with_ibrowse_adapter() ->
                            ?assert_equal(ExpectedRequest, Request),
                            {ok, Status, Headers, _} = Response,
                            ?assert_equal("200", Status),
-                           ExpectedHeaders = ["Date", "Server", "Content-Length",  "Content-type"],
+                           ExpectedHeaders = ["Date", "Content-Length",  "Content-Type"],
                            [ AssertHeader(Key, Headers) || Key <- ExpectedHeaders ]
                    end,
     vhs:use_cassette(iana_domain_test, AssertionFun),
