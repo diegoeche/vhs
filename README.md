@@ -1,8 +1,8 @@
 # VHS
 
-VHS is a webmocking framework for Erlang inspired by (Ruby's vcr
-gem)[https://github.com/vcr/vcr]. In the moment it only supports the
-(ibrowse http client)[https://github.com/cmullaparthi/ibrowse], but support for other
+VHS is a webmocking framework for Erlang inspired by [Ruby's vcr
+gem](https://github.com/vcr/vcr). In the moment it only supports the
+[ibrowse http client](https://github.com/cmullaparthi/ibrowse), but support for other
 libraries should be easy to add.
 
 # Show me the code
